@@ -1,6 +1,6 @@
 [package]
 name = "gemini_client_rust"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Jerjes Aguirre <jerjesaguirre@gmail.com>"]
 edition = "2021"
 license = "MIT"

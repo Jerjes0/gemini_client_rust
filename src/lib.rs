@@ -55,8 +55,8 @@ pub async fn generate_related_words(api_key: String, inner_prompt: String, inner
     // Use the passed API key directly
     let list_str = inner_list.join(", ");
     let refined_prompt = format!(
-        "Based on this prompt '{}' return a list of the 3 most related words from this list [{}]",
-        inner_prompt, list_str
+        "Which words from this list [{}] is most closely related to this prompt '{}', Just return the three most related words, nothing else. Make sure that the returned words exist in the list I provided",
+        list_str, inner_prompt
     );
 
     let request_body = RequestBody {
