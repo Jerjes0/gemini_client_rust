@@ -51,9 +51,8 @@ struct RequestBody {
 }
 
 #[wasm_bindgen]
-pub async fn generate_related_words(inner_prompt: String, inner_list: Vec<String>) -> Result<JsValue, JsValue> {
-    let api_key = std::env::var("GEMINI_API_KEY").map_err(|_| JsValue::from_str("API key not found"))?;
-    
+pub async fn generate_related_words(api_key: String, inner_prompt: String, inner_list: Vec<String>) -> Result<JsValue, JsValue> {
+    // Use the passed API key directly
     let list_str = inner_list.join(", ");
     let refined_prompt = format!(
         "Based on this prompt '{}' return a list of the 3 most related words from this list [{}]",
@@ -98,7 +97,7 @@ pub async fn generate_related_words(inner_prompt: String, inner_list: Vec<String
     if response.ok() {
         let response_text = response.text().await.map_err(|e| JsValue::from_str(&format!("Failed to read response: {}", e)))?;
         let parsed_json: Value = serde_json::from_str(&response_text).map_err(|e| JsValue::from_str(&format!("Failed to parse response: {}", e)))?;
-        
+
         if let Some(text_field) = parsed_json["candidates"][0]["content"]["parts"][0]["text"].as_str() {
             let related_words: Vec<Value> = serde_json::from_str(text_field).map_err(|e| JsValue::from_str(&format!("Failed to deserialize response: {}", e)))?;
             let word_list: Vec<String> = related_words.iter().filter_map(|entry| {
@@ -116,9 +115,9 @@ pub async fn generate_related_words(inner_prompt: String, inner_list: Vec<String
 
 // Helper function to run async tasks in WASM
 #[wasm_bindgen]
-pub fn run_async_task(inner_prompt: String, inner_list: Vec<String>) {
+pub fn run_async_task(api_key: String, inner_prompt: String, inner_list: Vec<String>) {
     spawn_local(async move {
-        match generate_related_words(inner_prompt, inner_list).await {
+        match generate_related_words(api_key, inner_prompt, inner_list).await {
             Ok(result) => {
                 console::log_1(&result);
             }
